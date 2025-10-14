@@ -26,14 +26,12 @@ const createServer = async (container) => {
       sub: false,
       maxAgeSec: process.env.ACCESS_TOKEN_AGE,
     },
-    validate: (artifacts) => {
-      return {
-        isValid: true,
-        credentials: {
-          id: artifacts.decoded.payload.id,
-        },
-      };
-    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
   });
 
   await server.register([
@@ -72,7 +70,7 @@ const createServer = async (container) => {
       if (!translatedError.isServer) {
         return h.continue;
       }
-
+      console.log(translatedError.message);
       // penanganan server error sesuai kebutuhan
       const newResponse = h.response({
         status: "error",
@@ -93,9 +91,10 @@ const createServer = async (container) => {
       options: {
         auth: "forum_api_jwt",
       },
-      handler: (request) => {
-        return { status: "success", userId: request.auth.credentials.id };
-      },
+      handler: (request) => ({
+        status: "success",
+        userId: request.auth.credentials.id,
+      }),
     });
   }
 

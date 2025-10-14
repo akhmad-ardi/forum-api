@@ -1,99 +1,99 @@
-const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper");
-const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
-const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelper");
-const AddThread = require("../../../Domains/threads/entities/AddThread");
-const pool = require("../../database/postgres/pool");
-const CommentRepositoryPostgre = require("../CommentRepositoryPostgre");
-const ThreadRepositoryPostgres = require("../ThreadRepositoryPostgres");
+const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
+const AddThread = require('../../../Domains/threads/entities/AddThread');
+const pool = require('../../database/postgres/pool');
+const CommentRepositoryPostgre = require('../CommentRepositoryPostgre');
+const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 
-describe("CommentRepositoryPostgre", () => {
+describe('CommentRepositoryPostgre', () => {
   afterAll(async () => {
     await pool.end();
   });
 
-  describe("addComment function", () => {
+  describe('addComment function', () => {
     afterEach(async () => {
       await UsersTableTestHelper.cleanTable();
       await ThreadsTableTestHelper.cleanTable();
     });
 
-    it("should return added comment correctly", async () => {
+    it('should return added comment correctly', async () => {
       // Arrange
-      const idUser = "user-123";
+      const idUser = 'user-123';
       await UsersTableTestHelper.addUser({ id: idUser });
 
       const addThread = new AddThread({
-        title: "test title thread",
-        body: "test body thread",
+        title: 'test title thread',
+        body: 'test body thread',
       });
-      const fakeIdGenerator = () => "123";
+      const fakeIdGenerator = () => '123';
 
       /* create instance repositories */
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
       const commentRepositoryPostgre = new CommentRepositoryPostgre(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
 
       const addedThread = await threadRepositoryPostgres.addThread(
         idUser,
-        addThread
+        addThread,
       );
 
       // Action
       const addedComment = await commentRepositoryPostgre.addComment(
         idUser,
         addedThread.id,
-        { content: "test content" }
+        { content: 'test content' },
       );
 
       // Assert
       expect(addedComment).toEqual({
-        id: "comment-123",
-        content: "test content",
-        owner: "user-123",
+        id: 'comment-123',
+        content: 'test content',
+        owner: 'user-123',
       });
     });
   });
 
-  describe("softDeleteComment function", () => {
+  describe('softDeleteComment function', () => {
     afterEach(async () => {
       await UsersTableTestHelper.cleanTable();
       await ThreadsTableTestHelper.cleanTable();
     });
 
-    it("should persisnt soft delete correctly", async () => {
+    it('should persisnt soft delete correctly', async () => {
       // Arrange
-      const idUser = "user-123";
+      const idUser = 'user-123';
       await UsersTableTestHelper.addUser({ id: idUser });
 
       const addThread = new AddThread({
-        title: "test title thread",
-        body: "test body thread",
+        title: 'test title thread',
+        body: 'test body thread',
       });
-      const fakeIdGenerator = () => "123";
+      const fakeIdGenerator = () => '123';
 
       /* create instance repositories */
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
       const commentRepositoryPostgre = new CommentRepositoryPostgre(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
 
       const addedThread = await threadRepositoryPostgres.addThread(
         idUser,
-        addThread
+        addThread,
       );
       const addedComment = await commentRepositoryPostgre.addComment(
         idUser,
         addedThread.id,
-        { content: "test content" }
+        { content: 'test content' },
       );
 
       // Action
@@ -105,157 +105,136 @@ describe("CommentRepositoryPostgre", () => {
     });
   });
 
-  describe("verifyCommentExist function", () => {
+  describe('verifyCommentExist function', () => {
     afterEach(async () => {
       await UsersTableTestHelper.cleanTable();
       await ThreadsTableTestHelper.cleanTable();
     });
 
-    it("should throw comment not found", async () => {
+    it('should throw comment not found', async () => {
       // Arrange
-      const idUser = "user-123";
-      await UsersTableTestHelper.addUser({ id: idUser });
-
-      const idThread = "thread-123";
-      await ThreadsTableTestHelper.addThread({
-        id: idThread,
-        owner: idUser,
-        title: "test title thread",
-        body: "test body thread",
-      });
-
-      const idComment = "comment-123";
-      await CommentsTableTestHelper.addComment({
-        id: idComment,
-        owner: idUser,
-        content: "test content",
-        threadId: idThread,
-      });
-
-      const fakeIdGenerator = () => "123";
-
-      /* create instance repository */
+      const fakeIdGenerator = () => '123';
       const commentRepositoryPostgre = new CommentRepositoryPostgre(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
 
       // Action and Assert
       await expect(
-        commentRepositoryPostgre.verifyCommentExist("xxx")
-      ).rejects.toThrow("comment not found");
+        commentRepositoryPostgre.verifyCommentExist('xxx'),
+      ).rejects.toThrow('comment not found');
     });
 
-    it("should comment found", async () => {
+    it('should comment found', async () => {
       // Arrange
-      const idUser = "user-123";
+      const idUser = 'user-123';
       await UsersTableTestHelper.addUser({ id: idUser });
 
-      const idThread = "thread-123";
+      const idThread = 'thread-123';
       await ThreadsTableTestHelper.addThread({
         id: idThread,
         owner: idUser,
-        title: "test title thread",
-        body: "test body thread",
+        title: 'test title thread',
+        body: 'test body thread',
       });
 
-      const idComment = "comment-123";
+      const idComment = 'comment-123';
       await CommentsTableTestHelper.addComment({
         id: idComment,
         owner: idUser,
-        content: "test content",
+        content: 'test content',
         threadId: idThread,
       });
 
-      const fakeIdGenerator = () => "123";
+      const fakeIdGenerator = () => '123';
 
       /* create instance repository */
       const commentRepositoryPostgre = new CommentRepositoryPostgre(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
 
       // Action and Assert
       await expect(
-        commentRepositoryPostgre.verifyCommentExist(idComment)
-      ).resolves.not.toThrow("comment not found");
+        commentRepositoryPostgre.verifyCommentExist(idComment),
+      ).resolves.not.toThrow('comment not found');
     });
   });
 
-  describe("verifyCommentOwner function", () => {
+  describe('verifyCommentOwner function', () => {
     afterEach(async () => {
       await UsersTableTestHelper.cleanTable();
       await ThreadsTableTestHelper.cleanTable();
     });
 
-    it("should throw fobidden", async () => {
+    it('should throw fobidden', async () => {
       // Arrange
-      const idUser = "user-123";
+      const idUser = 'user-123';
       await UsersTableTestHelper.addUser({ id: idUser });
 
-      const idThread = "thread-123";
+      const idThread = 'thread-123';
       await ThreadsTableTestHelper.addThread({
         id: idThread,
         owner: idUser,
-        title: "test title thread",
-        body: "test body thread",
+        title: 'test title thread',
+        body: 'test body thread',
       });
 
-      const idComment = "comment-123";
+      const idComment = 'comment-123';
       await CommentsTableTestHelper.addComment({
         id: idComment,
         owner: idUser,
-        content: "test content",
+        content: 'test content',
         threadId: idThread,
       });
 
-      const fakeIdGenerator = () => "123";
+      const fakeIdGenerator = () => '123';
 
       /* create instance repository */
       const commentRepositoryPostgre = new CommentRepositoryPostgre(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
 
       // Action and Assert
       await expect(
-        commentRepositoryPostgre.verifyCommentOwner("comment-xxx", "user-xxx")
-      ).rejects.toThrow("forbidden");
+        commentRepositoryPostgre.verifyCommentOwner('comment-xxx', 'user-xxx'),
+      ).rejects.toThrow('forbidden');
     });
 
-    it("should not forbidden", async () => {
+    it('should not forbidden', async () => {
       // Arrange
-      const idUser = "user-123";
+      const idUser = 'user-123';
       await UsersTableTestHelper.addUser({ id: idUser });
 
-      const idThread = "thread-123";
+      const idThread = 'thread-123';
       await ThreadsTableTestHelper.addThread({
         id: idThread,
         owner: idUser,
-        title: "test title thread",
-        body: "test body thread",
+        title: 'test title thread',
+        body: 'test body thread',
       });
 
-      const idComment = "comment-123";
+      const idComment = 'comment-123';
       await CommentsTableTestHelper.addComment({
         id: idComment,
         owner: idUser,
-        content: "test content",
+        content: 'test content',
         threadId: idThread,
       });
 
-      const fakeIdGenerator = () => "123";
+      const fakeIdGenerator = () => '123';
 
       /* create instance repository */
       const commentRepositoryPostgre = new CommentRepositoryPostgre(
         pool,
-        fakeIdGenerator
+        fakeIdGenerator,
       );
 
       // Action and Assert
       await expect(
-        commentRepositoryPostgre.verifyCommentOwner(idComment, idUser)
-      ).resolves.not.toThrow("forbidden");
+        commentRepositoryPostgre.verifyCommentOwner(idComment, idUser),
+      ).resolves.not.toThrow('forbidden');
     });
   });
 });

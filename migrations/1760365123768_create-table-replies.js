@@ -1,22 +1,31 @@
 /* eslint-disable camelcase */
 
 exports.up = (pgm) => {
-  pgm.createTable('threads', {
+  pgm.createTable('replies', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
     },
-    title: {
-      type: 'VARCHAR(255)',
+    comment_id: {
+      type: 'VARCHAR(50)',
       notNull: true,
-    },
-    body: {
-      type: 'TEXT',
-      notNull: true,
+      references: 'comments(id)',
+      onDelete: 'CASCADE',
     },
     owner: {
       type: 'VARCHAR(50)',
       notNull: true,
+      references: 'users(id)',
+      onDelete: 'CASCADE',
+    },
+    content: {
+      type: 'TEXT',
+      notNull: true,
+    },
+    is_delete: {
+      type: 'BOOLEAN',
+      notNull: true,
+      default: false,
     },
     created_at: {
       type: 'TIMESTAMPTZ',
@@ -32,5 +41,5 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable('threads');
+  pgm.dropTable('replies');
 };

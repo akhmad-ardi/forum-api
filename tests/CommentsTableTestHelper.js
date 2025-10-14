@@ -1,15 +1,15 @@
 /* istanbul ignore file */
-const pool = require("../src/Infrastructures/database/postgres/pool");
+const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const CommentsTableTestHelper = {
   async addComment({
-    id = "comment-123",
-    threadId = "thread-123",
-    owner = "user-123",
-    content = "test content",
+    id = 'comment-123',
+    threadId = 'thread-123',
+    owner = 'user-123',
+    content = 'test content',
   }) {
     const query = {
-      text: "INSERT INTO comments VALUES($1, $2, $3, $4)",
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4)',
       values: [id, threadId, owner, content],
     };
 
@@ -18,7 +18,7 @@ const CommentsTableTestHelper = {
 
   async findById(id) {
     const query = {
-      text: "SELECT * FROM comments WHERE id = $1",
+      text: 'SELECT * FROM comments WHERE id = $1',
       values: [id],
     };
 
@@ -29,7 +29,7 @@ const CommentsTableTestHelper = {
   },
 
   async cleanTable() {
-    await pool.query("DELETE FROM comments");
+    await pool.query('DELETE FROM comments');
   },
 };
 

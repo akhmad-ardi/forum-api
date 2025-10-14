@@ -1,6 +1,6 @@
-const ThreadRepository = require("../../Domains/threads/ThreadRepository");
-const NotFoundError = require("../../Commons/exceptions/NotFoundError");
-const AuthorizationError = require("../../Commons/exceptions/AuthorizationError");
+const ThreadRepository = require('../../Domains/threads/ThreadRepository');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 
 class ThreadRepositoryPostgres extends ThreadRepository {
   constructor(pool, idGenerator) {
@@ -15,7 +15,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const id = `thread-${this._idGenerator()}`;
 
     const query = {
-      text: "INSERT INTO threads VALUES($1, $2, $3, $4) RETURNING id, title, owner",
+      text: 'INSERT INTO threads VALUES($1, $2, $3, $4) RETURNING id, title, owner',
       values: [id, title, body, owner],
     };
 
@@ -48,7 +48,26 @@ class ThreadRepositoryPostgres extends ThreadRepository {
                 'content', CASE 
                             WHEN c.is_delete THEN '**komentar telah dihapus**' 
                             ELSE c.content 
-                          END
+                          END,
+                'replies', COALESCE(
+                  (
+                    SELECT json_agg(
+                      json_build_object(
+                        'id', r.id,
+                        'username', ru.username,
+                        'date', to_char(r.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+                        'content', CASE 
+                                    WHEN r.is_delete THEN '**balasan telah dihapus**'
+                                    ELSE r.content 
+                                  END
+                      ) ORDER BY r.created_at
+                    )
+                    FROM replies r
+                    JOIN users ru ON ru.id = r.owner
+                    WHERE r.comment_id = c.id
+                  ),
+                  '[]'
+                )
               ) ORDER BY c.created_at
             ) FILTER (WHERE c.id IS NOT NULL),
             '[]'
@@ -70,13 +89,13 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
   async verifyThreadExist(threadId) {
     const query = {
-      text: "SELECT id FROM threads WHERE id = $1",
+      text: 'SELECT id FROM threads WHERE id = $1',
       values: [threadId],
     };
 
     const result = await this._pool.query(query);
     if (!result.rowCount) {
-      throw new NotFoundError("thread not found");
+      throw new NotFoundError('thread not found');
     }
   }
 }

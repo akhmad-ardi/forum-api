@@ -1,4 +1,4 @@
-const AddComment = require("../../Domains/comments/entities/AddComment");
+const AddComment = require('../../Domains/comments/entities/AddComment');
 
 class AddCommentUseCase {
   constructor({ commentRepository, threadRepository }) {
@@ -12,7 +12,7 @@ class AddCommentUseCase {
     return await this._commentRepository.addComment(
       owner,
       threadId,
-      addComment
+      addComment,
     );
   }
 }
