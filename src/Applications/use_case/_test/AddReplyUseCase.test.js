@@ -16,12 +16,10 @@ describe('AddReplyUseCase', () => {
       content: useCasePayload.content,
     };
 
-    /** create dependency of use case */
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
 
-    /** mocking needed function */
     mockThreadRepository.verifyThreadExist = jest
       .fn()
       .mockImplementation(() => Promise.resolve('thread-123'));
@@ -32,7 +30,6 @@ describe('AddReplyUseCase', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(mockAddedReply));
 
-    /** create instance use case */
     const addReplyUseCase = new AddReplyUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,

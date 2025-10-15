@@ -6,7 +6,6 @@ const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 describe('DeleteReplyUseCase', () => {
   it('should orchestrating the add reply action correctly', async () => {
     // Arrange
-    /** create dependency of use case */
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
@@ -28,7 +27,6 @@ describe('DeleteReplyUseCase', () => {
       .fn()
       .mockImplementation(() => Promise.resolve('reply-123'));
 
-    /** create instance use case */
     const deleteReplyUseCase = new DeleteReplyUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,

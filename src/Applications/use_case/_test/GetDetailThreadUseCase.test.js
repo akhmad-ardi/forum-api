@@ -4,7 +4,6 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 describe('GetDetaillThreadUseCase', () => {
   it('should orchestrate the get detail thread action correctly', async () => {
     // Arrange
-    /** create dependency of use case */
     const mockThreadRepository = new ThreadRepository();
 
     mockThreadRepository.verifyThreadExist = jest.fn().mockResolvedValue();

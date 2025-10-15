@@ -11,7 +11,10 @@ class AddReplyUseCase {
     const addReply = new AddReply(useCasePayload);
     await this._threadRepository.verifyThreadExist(threadId);
     await this._commentRepository.verifyCommentExist(commentId);
-    return await this._replyRepository.addReply(owner, commentId, addReply);
+
+    const addedReply = await this._replyRepository.addReply(owner, commentId, addReply);
+
+    return addedReply;
   }
 }
 

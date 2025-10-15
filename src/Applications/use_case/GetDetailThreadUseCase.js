@@ -5,7 +5,10 @@ class GetDetaillThreadUseCase {
 
   async execute(threadId) {
     await this._threadRepository.verifyThreadExist(threadId);
-    return await this._threadRepository.getThread(threadId);
+
+    const getThread = await this._threadRepository.getThread(threadId);
+
+    return getThread;
   }
 }
 

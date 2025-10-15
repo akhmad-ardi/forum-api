@@ -5,7 +5,6 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 describe('DeleteCommentUseCase', () => {
   it('should orchestrate the soft delete comment action correctly', async () => {
     // Arrange
-    /** create dependency of use case */
     const mockCommentRepository = new CommentRepository();
     const mockThreadRepository = new ThreadRepository();
 

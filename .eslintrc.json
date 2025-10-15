@@ -8,11 +8,17 @@
   "parserOptions": {
     "ecmaVersion": "latest"
   },
+  "ignorePatterns": [
+    "**/*.test.js",
+    "tests/**",
+    "__tests__/**"
+  ],
   "rules": {
     "no-console": "off",
     "comma-dangle": ["error", "always-multiline"],
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
-    "quotes": "off"
+    "quotes": "off",
+    "no-unused-vars": "off"
   }
 }

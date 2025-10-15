@@ -70,7 +70,7 @@ const createServer = async (container) => {
       if (!translatedError.isServer) {
         return h.continue;
       }
-      console.log(translatedError.message);
+      // console.log(translatedError.message);
       // penanganan server error sesuai kebutuhan
       const newResponse = h.response({
         status: "error",
@@ -83,20 +83,6 @@ const createServer = async (container) => {
     // jika bukan error, lanjutkan dengan response sebelumnya (tanpa terintervensi)
     return h.continue;
   });
-
-  if (process.env.NODE_ENV === "test") {
-    server.route({
-      method: "GET",
-      path: "/test-auth",
-      options: {
-        auth: "forum_api_jwt",
-      },
-      handler: (request) => ({
-        status: "success",
-        userId: request.auth.credentials.id,
-      }),
-    });
-  }
 
   return server;
 };
