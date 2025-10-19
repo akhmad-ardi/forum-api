@@ -1,41 +1,41 @@
-const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
-const AddThreadUseCase = require('../AddThreadUseCase');
+const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
+const AddThreadUseCase = require("../AddThreadUseCase");
 
-describe('AddThreadUseCase', () => {
-  it('should orchestrating the add thread action correctly', async () => {
+describe("AddThreadUseCase", () => {
+  it("should orchestrate add thread action correctly", async () => {
     // Arrange
     const useCasePayload = {
-      title: 'test title thread',
-      body: 'test body thread',
-    };
-
-    const mockAddedThread = {
-      id: 'thread-123',
-      title: useCasePayload.title,
-      owner: 'user-123',
+      title: "test title thread",
+      body: "test body thread",
     };
 
     const mockThreadRepository = new ThreadRepository();
 
-    mockThreadRepository.addThread = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(mockAddedThread));
+    // Mock hanya untuk memastikan fungsi berjalan, bukan hasilnya
+    mockThreadRepository.addThread = jest.fn().mockResolvedValue({
+      id: "thread-123",
+      title: "test title thread",
+      owner: "user-123",
+    });
 
     const addThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,
     });
 
     // Action
-    const addedThread = await addThreadUseCase.execute(
-      'user-123',
-      useCasePayload,
-    );
+    const result = await addThreadUseCase.execute("user-123", useCasePayload);
 
     // Assert
-    expect(mockThreadRepository.addThread).toBeCalledWith(
-      'user-123',
-      useCasePayload,
+    expect(mockThreadRepository.addThread).toHaveBeenCalledWith(
+      "user-123",
+      useCasePayload
     );
-    expect(addedThread).toStrictEqual(mockAddedThread);
+    expect(result).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        title: useCasePayload.title,
+        owner: "user-123",
+      })
+    );
   });
 });

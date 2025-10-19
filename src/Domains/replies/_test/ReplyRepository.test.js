@@ -1,22 +1,25 @@
-const ReplyRepository = require('../ReplyRepository');
+const ReplyRepository = require("../ReplyRepository");
 
-describe('ReplyRepository interface', () => {
-  it('should throw error when invoke abstract behavior', async () => {
+describe("ReplyRepository interface", () => {
+  it("should throw error when invoke abstract behavior", async () => {
     // Arrange
     const replyRepository = new ReplyRepository();
 
     // Action and Assert
-    await expect(replyRepository.addReply('', '', {})).rejects.toThrowError(
-      'REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    await expect(replyRepository.addReply("", "", {})).rejects.toThrowError(
+      "REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
-    await expect(replyRepository.softDeleteReply('')).rejects.toThrowError(
-      'REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    await expect(replyRepository.getReplies("")).rejects.toThrowError(
+      "REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
-    await expect(replyRepository.verifyReplyExist('')).rejects.toThrowError(
-      'REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    await expect(replyRepository.softDeleteReply("")).rejects.toThrowError(
+      "REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
-    await expect(replyRepository.verifyReplyOwner('', '')).rejects.toThrowError(
-      'REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    await expect(replyRepository.verifyReplyExist("")).rejects.toThrowError(
+      "REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED"
+    );
+    await expect(replyRepository.verifyReplyOwner("", "")).rejects.toThrowError(
+      "REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
   });
 });

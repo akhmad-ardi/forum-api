@@ -1,22 +1,25 @@
-const CommentRepository = require('../CommentRepository');
+const CommentRepository = require("../CommentRepository");
 
-describe('CommentRepository interface', () => {
-  it('should throw error when invoke abstract behavior', async () => {
+describe("CommentRepository interface", () => {
+  it("should throw error when invoke abstract behavior", async () => {
     // Arrange
     const commentRepository = new CommentRepository();
 
     // Action and Assert
-    await expect(commentRepository.addComment('', '', {})).rejects.toThrowError(
-      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    await expect(commentRepository.addComment("", "", {})).rejects.toThrowError(
+      "COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
-    await expect(commentRepository.softDeleteComment('')).rejects.toThrowError(
-      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    await expect(commentRepository.getComments("")).rejects.toThrowError(
+      "COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
-    await expect(commentRepository.verifyCommentExist('')).rejects.toThrowError(
-      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    await expect(commentRepository.softDeleteComment("")).rejects.toThrowError(
+      "COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED"
+    );
+    await expect(commentRepository.verifyCommentExist("")).rejects.toThrowError(
+      "COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
     await expect(
-      commentRepository.verifyCommentOwner('', ''),
-    ).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+      commentRepository.verifyCommentOwner("", "")
+    ).rejects.toThrowError("COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED");
   });
 });

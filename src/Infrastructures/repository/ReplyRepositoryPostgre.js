@@ -22,6 +22,27 @@ class ReplyRepositoryPostgre extends ReplyRepository {
     return { ...result.rows[0] };
   }
 
+  async getReplies(commentId) {
+    const query = {
+      text: `
+        SELECT 
+          r.id,
+          r.content,
+          r.created_at AS date,
+          r.is_delete,
+          u.username
+        FROM replies r
+        JOIN users u ON u.id = r.owner
+        WHERE r.comment_id = $1
+        ORDER BY r.created_at ASC
+      `,
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+    return result.rows;
+  }
+
   async softDeleteReply(replyId) {
     const query = {
       text: 'UPDATE replies SET is_delete = TRUE, updated_at = NOW() WHERE id = $1 RETURNING id',

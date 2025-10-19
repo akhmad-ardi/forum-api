@@ -1,31 +1,21 @@
-const DeleteReplyUseCase = require('../DeleteReplyUseCase');
-const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
-const CommentRepository = require('../../../Domains/comments/CommentRepository');
-const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
+const DeleteReplyUseCase = require("../DeleteReplyUseCase");
+const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
+const CommentRepository = require("../../../Domains/comments/CommentRepository");
+const ReplyRepository = require("../../../Domains/replies/ReplyRepository");
 
-describe('DeleteReplyUseCase', () => {
-  it('should orchestrating the add reply action correctly', async () => {
+describe("DeleteReplyUseCase", () => {
+  it("should orchestrate the delete reply action correctly", async () => {
     // Arrange
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
 
-    /** mocking needed function */
-    mockThreadRepository.verifyThreadExist = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve('thread-123'));
-    mockCommentRepository.verifyCommentExist = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve('comment-123'));
-    mockReplyRepository.verifyReplyExist = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve('reply-123'));
-    mockReplyRepository.verifyReplyOwner = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve('reply-123', 'user-123'));
-    mockReplyRepository.softDeleteReply = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve('reply-123'));
+    /** Mocking only behavior (tanpa expected value) */
+    mockThreadRepository.verifyThreadExist = jest.fn().mockResolvedValue();
+    mockCommentRepository.verifyCommentExist = jest.fn().mockResolvedValue();
+    mockReplyRepository.verifyReplyExist = jest.fn().mockResolvedValue();
+    mockReplyRepository.verifyReplyOwner = jest.fn().mockResolvedValue();
+    mockReplyRepository.softDeleteReply = jest.fn().mockResolvedValue();
 
     const deleteReplyUseCase = new DeleteReplyUseCase({
       threadRepository: mockThreadRepository,
@@ -35,31 +25,34 @@ describe('DeleteReplyUseCase', () => {
 
     // Action
     await deleteReplyUseCase.execute(
-      'thread-123',
-      'comment-123',
-      'reply-123',
-      'user-123',
+      "thread-123",
+      "comment-123",
+      "reply-123",
+      "user-123"
     );
 
     // Assert
-    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith('thread-123');
-    expect(mockThreadRepository.verifyThreadExist).toBeCalledTimes(1);
-
-    expect(mockCommentRepository.verifyCommentExist).toBeCalledWith(
-      'comment-123',
+    expect(mockThreadRepository.verifyThreadExist).toHaveBeenCalledWith(
+      "thread-123"
     );
-    expect(mockCommentRepository.verifyCommentExist).toBeCalledTimes(1);
-
-    expect(mockReplyRepository.verifyReplyExist).toBeCalledWith('reply-123');
-    expect(mockReplyRepository.verifyReplyExist).toBeCalledTimes(1);
-
-    expect(mockReplyRepository.verifyReplyOwner).toBeCalledWith(
-      'reply-123',
-      'user-123',
+    expect(mockCommentRepository.verifyCommentExist).toHaveBeenCalledWith(
+      "comment-123"
     );
-    expect(mockReplyRepository.verifyReplyOwner).toBeCalledTimes(1);
+    expect(mockReplyRepository.verifyReplyExist).toHaveBeenCalledWith(
+      "reply-123"
+    );
+    expect(mockReplyRepository.verifyReplyOwner).toHaveBeenCalledWith(
+      "reply-123",
+      "user-123"
+    );
+    expect(mockReplyRepository.softDeleteReply).toHaveBeenCalledWith(
+      "reply-123"
+    );
 
-    expect(mockReplyRepository.softDeleteReply).toBeCalledWith('reply-123');
-    expect(mockReplyRepository.softDeleteReply).toBeCalledTimes(1);
+    expect(mockThreadRepository.verifyThreadExist).toHaveBeenCalledTimes(1);
+    expect(mockCommentRepository.verifyCommentExist).toHaveBeenCalledTimes(1);
+    expect(mockReplyRepository.verifyReplyExist).toHaveBeenCalledTimes(1);
+    expect(mockReplyRepository.verifyReplyOwner).toHaveBeenCalledTimes(1);
+    expect(mockReplyRepository.softDeleteReply).toHaveBeenCalledTimes(1);
   });
 });

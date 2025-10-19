@@ -148,7 +148,7 @@ describe("/threads endpoint", () => {
         method: "GET",
         url: `/threads/${idThread}`,
       });
-
+      
       // Assert
       const responseGetThreadJson = JSON.parse(responseGetThread.payload);
       expect(responseGetThread.statusCode).toEqual(200);

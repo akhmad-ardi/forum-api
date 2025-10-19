@@ -33,52 +33,16 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   async getThread(threadId) {
     const query = {
       text: `
-        SELECT 
-          t.id,
-          t.title,
-          t.body,
-          t.created_at AS date,
-          u.username,
-          COALESCE(
-            json_agg(
-              json_build_object(
-                'id', c.id,
-                'username', cu.username,
-                'date', to_char(c.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
-                'content', CASE 
-                            WHEN c.is_delete THEN '**komentar telah dihapus**' 
-                            ELSE c.content 
-                          END,
-                'replies', COALESCE(
-                  (
-                    SELECT json_agg(
-                      json_build_object(
-                        'id', r.id,
-                        'username', ru.username,
-                        'date', to_char(r.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
-                        'content', CASE 
-                                    WHEN r.is_delete THEN '**balasan telah dihapus**'
-                                    ELSE r.content 
-                                  END
-                      ) ORDER BY r.created_at
-                    )
-                    FROM replies r
-                    JOIN users ru ON ru.id = r.owner
-                    WHERE r.comment_id = c.id
-                  ),
-                  '[]'
-                )
-              ) ORDER BY c.created_at
-            ) FILTER (WHERE c.id IS NOT NULL),
-            '[]'
-          ) AS comments
-        FROM threads t
-        JOIN users u ON u.id = t.owner
-        LEFT JOIN comments c ON c.thread_id = t.id
-        LEFT JOIN users cu ON cu.id = c.owner
-        WHERE t.id = $1
-        GROUP BY t.id, u.username
-      `,
+      SELECT 
+        t.id, 
+        t.title, 
+        t.body, 
+        t.created_at AS date,
+        u.username
+      FROM threads t
+      JOIN users u ON u.id = t.owner
+      WHERE t.id = $1
+    `,
       values: [threadId],
     };
 
