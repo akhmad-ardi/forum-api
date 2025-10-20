@@ -20,12 +20,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     };
 
     const result = await this._pool.query(query);
-    const comment = result.rows[0];
-    return {
-      id: comment.id,
-      content: comment.content,
-      owner: comment.owner,
-    };
+    return { ...result.rows[0] };
   }
 
   async getComments(threadId) {

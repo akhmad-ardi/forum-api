@@ -4,6 +4,8 @@ const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelp
 const RepliesTableTestHelper = require("../../../../tests/RepliesTableTestHelper");
 const pool = require("../../database/postgres/pool");
 const ReplyRepositoryPostgre = require("../ReplyRepositoryPostgre");
+const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
+const AuthorizationError = require("../../../Commons/exceptions/AuthorizationError");
 
 describe("ReplyRepositoryPostgre", () => {
   afterAll(async () => {
@@ -15,6 +17,37 @@ describe("ReplyRepositoryPostgre", () => {
       await UsersTableTestHelper.cleanTable();
       await ThreadsTableTestHelper.cleanTable();
       await RepliesTableTestHelper.cleanTable();
+    });
+
+    it("should persist add reply", async () => {
+      // Arrange
+      const idUser = "user-123";
+      const idThread = "thread-123";
+      const idComment = "comment-123";
+
+      await UsersTableTestHelper.addUser({ id: idUser });
+      await ThreadsTableTestHelper.addThread({ id: idThread, owner: idUser });
+      await CommentsTableTestHelper.addComment({
+        id: idComment,
+        threadId: idThread,
+        owner: idUser,
+      });
+
+      const replyRepositoryPostgre = new ReplyRepositoryPostgre(
+        pool,
+        () => "123"
+      );
+
+      // Action
+      const addedReply = await replyRepositoryPostgre.addReply(
+        idUser,
+        idComment,
+        { content: "test content reply" }
+      );
+
+      // Assert
+      const replies = await RepliesTableTestHelper.findById(addedReply.id);
+      expect(replies).toHaveLength(1);
     });
 
     it("should return added reply correctly", async () => {
@@ -44,14 +77,11 @@ describe("ReplyRepositoryPostgre", () => {
       );
 
       // Assert
-      expect(addedReply.id).toBeDefined();
-      expect(addedReply.id).toEqual("reply-123");
-
-      expect(addedReply.content).toBeDefined();
-      expect(addedReply.content).toEqual("test content reply");
-
-      expect(addedReply.owner).toBeDefined();
-      expect(addedReply.owner).toEqual(idUser);
+      expect(addedReply).toStrictEqual({
+        id: "reply-123",
+        content: "test content reply",
+        owner: "user-123",
+      });
     });
   });
 
@@ -158,8 +188,8 @@ describe("ReplyRepositoryPostgre", () => {
       await replyRepositoryPostgre.softDeleteReply(idReply);
 
       // Assert
-      const reply = await RepliesTableTestHelper.findById(idReply);
-      expect(reply.is_delete).toEqual(true);
+      const replies = await RepliesTableTestHelper.findById(idReply);
+      expect(replies[0].is_delete).toEqual(true);
     });
   });
 
@@ -180,7 +210,7 @@ describe("ReplyRepositoryPostgre", () => {
       // Action and Assert
       await expect(
         replyRepositoryPostgre.verifyReplyExist("reply-not-found")
-      ).rejects.toThrow("reply not found");
+      ).rejects.toThrow(NotFoundError);
     });
 
     it("should reply found", async () => {
@@ -211,7 +241,7 @@ describe("ReplyRepositoryPostgre", () => {
       // Action and Assert
       await expect(
         replyRepositoryPostgre.verifyReplyExist(idReply)
-      ).resolves.not.toThrow("reply not found");
+      ).resolves.not.toThrow(NotFoundError);
     });
   });
 
@@ -261,7 +291,7 @@ describe("ReplyRepositoryPostgre", () => {
       // Action and Assert
       await expect(
         replyRepositoryPostgre.verifyReplyOwner(idReply, idUserNotOwner)
-      ).rejects.toThrow("forbidden");
+      ).rejects.toThrow(AuthorizationError);
     });
 
     it("should not throw forbidden", async () => {
@@ -298,7 +328,7 @@ describe("ReplyRepositoryPostgre", () => {
       // Action and Assert
       await expect(
         replyRepositoryPostgre.verifyReplyOwner(idReply, idUserOwner)
-      ).resolves.not.toThrow("forbidden");
+      ).resolves.not.toThrow(AuthorizationError);
     });
   });
 });

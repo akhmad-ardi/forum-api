@@ -4,7 +4,7 @@ const CommentRepository = require("../../../Domains/comments/CommentRepository")
 const ReplyRepository = require("../../../Domains/replies/ReplyRepository");
 
 describe("GetDetailThreadUseCase", () => {
-  it("should orchestrate the get detail thread action correctly", async () => {
+  it("should orchestrate the get detail thread action correctly and cover all branches", async () => {
     // Arrange
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
@@ -25,43 +25,98 @@ describe("GetDetailThreadUseCase", () => {
         username: "userA",
         date: "2025-10-05",
         content: "a comment",
+        is_delete: false,
       },
-    ]);
-
-    mockReplyRepository.getReplies = jest.fn().mockResolvedValue([
       {
-        id: "reply-123",
-        content: "a reply",
-        date: "2025-10-05",
+        id: "comment-456",
         username: "userB",
-        comment_id: "comment-123",
+        date: "2025-10-06",
+        content: "deleted comment",
+        is_delete: true,
       },
     ]);
 
-    const getDetailThreadUseCase = new GetDetailThreadUseCase({
+    mockReplyRepository.getReplies = jest
+      .fn()
+      .mockImplementation(async (commentId) => {
+        if (commentId === "comment-123") {
+          return [
+            {
+              id: "reply-123",
+              content: "a reply",
+              date: "2025-10-05",
+              username: "userC",
+              is_delete: false,
+            },
+          ];
+        } else {
+          return [
+            {
+              id: "reply-456",
+              content: "deleted reply",
+              date: "2025-10-06",
+              username: "userD",
+              is_delete: true,
+            },
+          ];
+        }
+      });
+
+    const useCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
     });
 
     // Action
-    await getDetailThreadUseCase.execute("thread-123");
+    const result = await useCase.execute("thread-123");
 
     // Assert
     expect(mockThreadRepository.verifyThreadExist).toHaveBeenCalledWith(
       "thread-123"
     );
-    expect(mockThreadRepository.verifyThreadExist).toHaveBeenCalledTimes(1);
-
     expect(mockThreadRepository.getThread).toHaveBeenCalledWith("thread-123");
-    expect(mockThreadRepository.getThread).toHaveBeenCalledTimes(1);
-
     expect(mockCommentRepository.getComments).toHaveBeenCalledWith(
       "thread-123"
     );
-    expect(mockCommentRepository.getComments).toHaveBeenCalledTimes(1);
-
     expect(mockReplyRepository.getReplies).toHaveBeenCalledWith("comment-123");
-    expect(mockReplyRepository.getReplies).toHaveBeenCalledTimes(1);
+    expect(mockReplyRepository.getReplies).toHaveBeenCalledWith("comment-456");
+    expect(result).toStrictEqual({
+      id: "thread-123",
+      title: "thread title",
+      body: "thread body",
+      date: "2025-10-05",
+      username: "dicoding",
+      comments: [
+        {
+          id: "comment-123",
+          username: "userA",
+          date: "2025-10-05",
+          content: "a comment",
+          replies: [
+            {
+              id: "reply-123",
+              date: "2025-10-05",
+              username: "userC",
+              content: "a reply",
+            },
+          ],
+        },
+        {
+          id: "comment-456",
+          username: "userB",
+          date: "2025-10-06",
+          content: "**komentar telah dihapus**",
+          replies: [
+            {
+              id: "reply-456",
+              date: "2025-10-06",
+              username: "userD",
+              content: "**balasan telah dihapus**",
+            },
+          ],
+        },
+      ],
+    });
   });
 });

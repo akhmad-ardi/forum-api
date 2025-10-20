@@ -14,8 +14,7 @@ describe("AddCommentUseCase", () => {
 
     mockThreadRepository.verifyThreadExist = jest.fn().mockResolvedValue();
     mockCommentRepository.addComment = jest.fn().mockResolvedValue({
-      id: "comment-xyz",
-      thread_id: "thread-123",
+      id: "comment-123",
       content: useCasePayload.content,
       owner: "user-123",
     });
@@ -41,10 +40,9 @@ describe("AddCommentUseCase", () => {
       "thread-123",
       useCasePayload
     );
-    expect(result).toEqual(
+    expect(result).toStrictEqual(
       expect.objectContaining({
         id: expect.any(String),
-        thread_id: "thread-123",
         content: useCasePayload.content,
         owner: "user-123",
       })

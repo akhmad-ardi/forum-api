@@ -6,11 +6,12 @@ const CommentsTableTestHelper = {
     id = 'comment-123',
     threadId = 'thread-123',
     owner = 'user-123',
+    date = new Date().toISOString(),
     content = 'test content',
   }) {
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4)',
-      values: [id, threadId, owner, content],
+      text: 'INSERT INTO comments(id, thread_id, owner, content, created_at) VALUES($1, $2, $3, $4, $5)',
+      values: [id, threadId, owner, content, date],
     };
 
     await pool.query(query);
@@ -23,9 +24,7 @@ const CommentsTableTestHelper = {
     };
 
     const result = await pool.query(query);
-
-    const comment = result.rows[0];
-    return comment;
+    return result.rows;
   },
 
   async cleanTable() {

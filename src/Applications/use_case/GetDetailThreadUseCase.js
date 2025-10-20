@@ -15,9 +15,13 @@ class GetDetaillThreadUseCase {
       commentsData.map(async (comment) => {
         const replies = await this._replyRepository.getReplies(comment.id);
 
-        const content = comment.is_delete ? "**komentar telah dihapus**" : comment.content;
+        const content = comment.is_delete
+          ? "**komentar telah dihapus**"
+          : comment.content;
         const repliesMap = replies.map((reply) => {
-          const replyContent = reply.is_delete ? "**balasan telah dihapus**" : reply.content;
+          const replyContent = reply.is_delete
+            ? "**balasan telah dihapus**"
+            : reply.content;
           return {
             id: reply.id,
             date: reply.date,
