@@ -1,0 +1,73 @@
+name: CI - Forum API Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      # PostgreSQL container untuk pengujian
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: forum_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      # Environment server
+      HOST: localhost
+      PORT: 4000
+
+      # PostgreSQL (digunakan untuk test)
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: forum_test
+      PGPORT: 5432
+
+      # 🔒 Token environment (diambil dari GitHub Secrets)
+      ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
+      REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
+      ACCESS_TOKEN_AGE: ${{ secrets.ACCESS_TOKEN_AGE }}
+
+      # Mode pengujian
+      NODE_ENV: test
+
+    steps:
+      # Ambil kode dari repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Node.js versi 20
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install dependency (lebih cepat & konsisten)
+      - name: Install dependencies
+        run: npm ci
+
+      # Jalankan migrasi database untuk environment test
+      - name: Run database migrations
+        run: npm run migrate:test
+
+      # Jalankan linting (cek style & kesalahan kode)
+      - name: Run ESLint
+        run: npm run lint
+
+      # Jalankan pengujian otomatis (Jest)
+      - name: Run Jest tests
+        run: npm test
