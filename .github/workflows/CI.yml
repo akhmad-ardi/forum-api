@@ -37,7 +37,7 @@ jobs:
       PGDATABASE: forum_test
       PGPORT: 5432
 
-      # 🔒 Token environment (diambil dari GitHub Secrets)
+      # 🔒Token environment (diambil dari GitHub Secrets)
       ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
       REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
       ACCESS_TOKEN_AGE: ${{ secrets.ACCESS_TOKEN_AGE }}
@@ -74,7 +74,7 @@ jobs:
 
       # Jalankan migrasi database untuk environment test
       - name: Run database migrations
-        run: npm run migrate:test
+        run: npm run migrate:test up
 
       # Jalankan linting (cek style & kesalahan kode)
       - name: Run ESLint
