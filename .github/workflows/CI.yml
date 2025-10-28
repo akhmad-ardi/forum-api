@@ -60,6 +60,18 @@ jobs:
       - name: Install dependencies
         run: npm i
 
+      # Membuat file config database untuk environment test
+      - name: Create test database config
+        run: |
+          mkdir -p config/database
+          echo '{
+            "user": "postgres",
+            "password": "postgres",
+            "host": "localhost",
+            "port": 5432,
+            "database": "forum_test"
+          }' > config/database/test.json
+
       # Jalankan migrasi database untuk environment test
       - name: Run database migrations
         run: npm run migrate:test
