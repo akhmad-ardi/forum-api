@@ -1,37 +1,37 @@
-const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
-const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper");
-const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelper");
-const container = require("../../container");
-const createServer = require("../createServer");
-const pool = require("../../database/postgres/pool");
+const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
+const container = require('../../container');
+const createServer = require('../createServer');
+const pool = require('../../database/postgres/pool');
 
-describe("/threads endpoint", () => {
+describe('/threads endpoint', () => {
   afterAll(async () => {
     await pool.end();
   });
 
-  describe("when POST /threads/{threadId}/comments", () => {
-    let accessTokenUser = "";
-    let idThread = "";
+  describe('when POST /threads/{threadId}/comments', () => {
+    let accessTokenUser = '';
+    let idThread = '';
 
     beforeEach(async () => {
       const server = await createServer(container);
       const userPayload = {
-        username: "test_user",
-        fullname: "Test User",
-        password: "123456",
+        username: 'test_user',
+        fullname: 'Test User',
+        password: '123456',
       };
 
       // add user
       await server.inject({
-        method: "POST",
-        url: "/users",
+        method: 'POST',
+        url: '/users',
         payload: userPayload,
       });
 
       const responseLoginUser = await server.inject({
-        method: "POST",
-        url: "/authentications",
+        method: 'POST',
+        url: '/authentications',
         payload: {
           username: userPayload.username,
           password: userPayload.password,
@@ -42,11 +42,11 @@ describe("/threads endpoint", () => {
       accessTokenUser = accessToken;
 
       const responseAddThread = await server.inject({
-        method: "POST",
-        url: "/threads",
+        method: 'POST',
+        url: '/threads',
         payload: {
-          title: "test title thread",
-          body: "test body thread",
+          title: 'test title thread',
+          body: 'test body thread',
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -56,16 +56,16 @@ describe("/threads endpoint", () => {
       idThread = responseAddThreadJson.data.addedThread.id;
     });
 
-    it("should response 201", async () => {
+    it('should response 201', async () => {
       // Arrange
       const server = await createServer(container);
 
       // Action
       const responseAddComment = await server.inject({
-        method: "POST",
+        method: 'POST',
         url: `/threads/${idThread}/comments`,
         payload: {
-          content: "test content",
+          content: 'test content',
         },
         headers: {
           Authorization: `Bearer ${accessTokenUser}`,
@@ -75,7 +75,7 @@ describe("/threads endpoint", () => {
       // Assert
       const responseAddCommentJson = JSON.parse(responseAddComment.payload);
       expect(responseAddComment.statusCode).toEqual(201);
-      expect(responseAddCommentJson.status).toEqual("success");
+      expect(responseAddCommentJson.status).toEqual('success');
       expect(responseAddCommentJson.data).toBeDefined();
       expect(responseAddCommentJson.data.addedComment).toBeDefined();
       expect(responseAddCommentJson.data.addedComment.id).toBeDefined();
@@ -83,16 +83,16 @@ describe("/threads endpoint", () => {
       expect(responseAddCommentJson.data.addedComment.owner).toBeDefined();
     });
 
-    it("should response 400", async () => {
+    it('should response 400', async () => {
       // Arrange
       const server = await createServer(container);
 
       // Action
       const responseAddComment = await server.inject({
-        method: "POST",
+        method: 'POST',
         url: `/threads/${idThread}/comments`,
         payload: {
-          content: "",
+          content: '',
         },
         headers: {
           Authorization: `Bearer ${accessTokenUser}`,
@@ -102,20 +102,20 @@ describe("/threads endpoint", () => {
       // Assert
       const responseAddCommentJson = JSON.parse(responseAddComment.payload);
       expect(responseAddComment.statusCode).toEqual(400);
-      expect(responseAddCommentJson.status).toEqual("fail");
+      expect(responseAddCommentJson.status).toEqual('fail');
       expect(responseAddCommentJson.message).toBeDefined();
     });
 
-    it("should response 404", async () => {
+    it('should response 404', async () => {
       // Arrange
       const server = await createServer(container);
 
       // Action
       const responseAddComment = await server.inject({
-        method: "POST",
-        url: "/threads/thread-not-found-xxx/comments",
+        method: 'POST',
+        url: '/threads/thread-not-found-xxx/comments',
         payload: {
-          content: "test content",
+          content: 'test content',
         },
         headers: {
           Authorization: `Bearer ${accessTokenUser}`,
@@ -125,7 +125,7 @@ describe("/threads endpoint", () => {
       // Assert
       const responseAddCommentJson = JSON.parse(responseAddComment.payload);
       expect(responseAddComment.statusCode).toEqual(404);
-      expect(responseAddCommentJson.status).toEqual("fail");
+      expect(responseAddCommentJson.status).toEqual('fail');
       expect(responseAddCommentJson.message).toBeDefined();
     });
 
@@ -136,25 +136,25 @@ describe("/threads endpoint", () => {
     });
   });
 
-  describe("when DELETE /threads/{threadId}/comments/{commentId}", () => {
-    let accessTokenUser = "";
-    let idUser = "";
-    let idThread = "thread-123";
-    let idComment = "comment-123";
+  describe('when DELETE /threads/{threadId}/comments/{commentId}', () => {
+    let accessTokenUser = '';
+    let idUser = '';
+    const idThread = 'thread-123';
+    const idComment = 'comment-123';
 
     beforeEach(async () => {
       const server = await createServer(container);
 
       const userPayload = {
-        username: "test_user",
-        password: "123456",
-        fullname: "Test User",
+        username: 'test_user',
+        password: '123456',
+        fullname: 'Test User',
       };
 
       /* add user */
       const responseAddUser = await server.inject({
-        method: "POST",
-        url: "/users",
+        method: 'POST',
+        url: '/users',
         payload: userPayload,
       });
       const responseAddUserJson = JSON.parse(responseAddUser.payload);
@@ -162,8 +162,8 @@ describe("/threads endpoint", () => {
 
       /* login */
       const responseLoginUser = await server.inject({
-        method: "POST",
-        url: "/authentications",
+        method: 'POST',
+        url: '/authentications',
         payload: {
           username: userPayload.username,
           password: userPayload.password,
@@ -174,7 +174,7 @@ describe("/threads endpoint", () => {
       accessTokenUser = accessToken;
     });
 
-    it("should response 200", async () => {
+    it('should response 200', async () => {
       // Arrange
       const server = await createServer(container);
 
@@ -190,30 +190,30 @@ describe("/threads endpoint", () => {
 
       // Action
       const responseDeletedComment = await server.inject({
-        method: "DELETE",
+        method: 'DELETE',
         url: `/threads/${idThread}/comments/${idComment}`,
         headers: {
           Authorization: `Bearer ${accessTokenUser}`,
         },
       });
       const responseDeletedCommentJson = JSON.parse(
-        responseDeletedComment.payload
+        responseDeletedComment.payload,
       );
 
       // Assert
       expect(responseDeletedComment.statusCode).toEqual(200);
-      expect(responseDeletedCommentJson.status).toEqual("success");
+      expect(responseDeletedCommentJson.status).toEqual('success');
     });
 
-    it("should response 403", async () => {
+    it('should response 403', async () => {
       // Arrange
       const server = await createServer(container);
 
-      const idUserOwner = "user-owner-123";
+      const idUserOwner = 'user-owner-123';
 
       await UsersTableTestHelper.addUser({
         id: idUserOwner,
-        username: "test_user_owner",
+        username: 'test_user_owner',
       });
       await ThreadsTableTestHelper.addThread({
         id: idThread,
@@ -227,23 +227,23 @@ describe("/threads endpoint", () => {
 
       // Action
       const responseDeletedComment = await server.inject({
-        method: "DELETE",
+        method: 'DELETE',
         url: `/threads/${idThread}/comments/${idComment}`,
         headers: {
           Authorization: `Bearer ${accessTokenUser}`,
         },
       });
       const responseDeletedCommentJson = JSON.parse(
-        responseDeletedComment.payload
+        responseDeletedComment.payload,
       );
 
       // Assert
       expect(responseDeletedComment.statusCode).toEqual(403);
-      expect(responseDeletedCommentJson.status).toEqual("fail");
-      expect(responseDeletedCommentJson.message).toEqual("forbidden");
+      expect(responseDeletedCommentJson.status).toEqual('fail');
+      expect(responseDeletedCommentJson.message).toEqual('forbidden');
     });
 
-    it("should response 404 thread not found", async () => {
+    it('should response 404 thread not found', async () => {
       // Arrange
       const server = await createServer(container);
 
@@ -259,23 +259,23 @@ describe("/threads endpoint", () => {
 
       // Action
       const responseDeletedComment = await server.inject({
-        method: "DELETE",
+        method: 'DELETE',
         url: `/threads/thread-not-found/comments/${idComment}`,
         headers: {
           Authorization: `Bearer ${accessTokenUser}`,
         },
       });
       const responseDeletedCommentJson = JSON.parse(
-        responseDeletedComment.payload
+        responseDeletedComment.payload,
       );
 
       // Assert
       expect(responseDeletedComment.statusCode).toEqual(404);
-      expect(responseDeletedCommentJson.status).toEqual("fail");
-      expect(responseDeletedCommentJson.message).toEqual("thread not found");
+      expect(responseDeletedCommentJson.status).toEqual('fail');
+      expect(responseDeletedCommentJson.message).toEqual('thread not found');
     });
 
-    it("should response 404 comment not found", async () => {
+    it('should response 404 comment not found', async () => {
       // Arrange
       const server = await createServer(container);
 
@@ -291,20 +291,20 @@ describe("/threads endpoint", () => {
 
       // Action
       const responseDeletedComment = await server.inject({
-        method: "DELETE",
+        method: 'DELETE',
         url: `/threads/${idThread}/comments/comment-not-found`,
         headers: {
           Authorization: `Bearer ${accessTokenUser}`,
         },
       });
       const responseDeletedCommentJson = JSON.parse(
-        responseDeletedComment.payload
+        responseDeletedComment.payload,
       );
 
       // Assert
       expect(responseDeletedComment.statusCode).toEqual(404);
-      expect(responseDeletedCommentJson.status).toEqual("fail");
-      expect(responseDeletedCommentJson.message).toEqual("comment not found");
+      expect(responseDeletedCommentJson.status).toEqual('fail');
+      expect(responseDeletedCommentJson.message).toEqual('comment not found');
     });
 
     afterEach(async () => {

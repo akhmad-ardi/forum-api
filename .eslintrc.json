@@ -9,16 +9,23 @@
     "ecmaVersion": "latest"
   },
   "ignorePatterns": [
-    "**/*.test.js",
-    "tests/**",
-    "__tests__/**"
+    "node_modules/**"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "tests/**", "__tests__/**"],
+      "rules": {
+        "no-undef": "off",
+        "camelcase": "off"
+      }
+    }
   ],
   "rules": {
     "no-console": "off",
     "comma-dangle": ["error", "always-multiline"],
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
-    "quotes": "off",
+    "quotes": ["error", "single"],
     "no-unused-vars": "off"
   }
 }
