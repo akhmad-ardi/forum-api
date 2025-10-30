@@ -8,22 +8,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    container: ghcr.io/railwayapp/cli:latest
+
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
 
     steps:
-      # 1️⃣ Checkout source
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Railway CLI
-      - name: Setup Railway
-        uses: railwayapp/railway-action@v2
-        with:
-          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
-
-      # 3️⃣ Optional - Tes build Docker (pastikan tidak error)
-      - name: Build Docker image (test only)
-        run: docker build -t forum-app .
-
-      # 4️⃣ Deploy ke Railway (Railway otomatis build dari Dockerfile)
       - name: Deploy to Railway
-        run: railway up --ci
+        run: railway up --service=${{ env.RAILWAY_SERVICE_ID }} --ci
