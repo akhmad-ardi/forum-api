@@ -1,10 +1,10 @@
-const DeleteReplyUseCase = require("../DeleteReplyUseCase");
-const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
-const CommentRepository = require("../../../Domains/comments/CommentRepository");
-const ReplyRepository = require("../../../Domains/replies/ReplyRepository");
+const DeleteReplyUseCase = require('../DeleteReplyUseCase');
+const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
+const CommentRepository = require('../../../Domains/comments/CommentRepository');
+const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 
-describe("DeleteReplyUseCase", () => {
-  it("should orchestrate the delete reply action correctly", async () => {
+describe('DeleteReplyUseCase', () => {
+  it('should orchestrate the delete reply action correctly', async () => {
     // Arrange
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
@@ -25,28 +25,28 @@ describe("DeleteReplyUseCase", () => {
 
     // Action
     await deleteReplyUseCase.execute(
-      "thread-123",
-      "comment-123",
-      "reply-123",
-      "user-123"
+      'thread-123',
+      'comment-123',
+      'reply-123',
+      'user-123',
     );
 
     // Assert
     expect(mockThreadRepository.verifyThreadExist).toHaveBeenCalledWith(
-      "thread-123"
+      'thread-123',
     );
     expect(mockCommentRepository.verifyCommentExist).toHaveBeenCalledWith(
-      "comment-123"
+      'comment-123',
     );
     expect(mockReplyRepository.verifyReplyExist).toHaveBeenCalledWith(
-      "reply-123"
+      'reply-123',
     );
     expect(mockReplyRepository.verifyReplyOwner).toHaveBeenCalledWith(
-      "reply-123",
-      "user-123"
+      'reply-123',
+      'user-123',
     );
     expect(mockReplyRepository.softDeleteReply).toHaveBeenCalledWith(
-      "reply-123"
+      'reply-123',
     );
 
     expect(mockThreadRepository.verifyThreadExist).toHaveBeenCalledTimes(1);

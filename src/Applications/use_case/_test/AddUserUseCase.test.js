@@ -18,10 +18,10 @@ describe('AddUserUseCase', () => {
       username: useCasePayload.username,
       fullname: useCasePayload.fullname,
     });
-    
+
     const mockUserRepository = new UserRepository();
     const mockPasswordHash = new PasswordHash();
-  
+
     mockUserRepository.verifyAvailableUsername = jest
       .fn()
       .mockImplementation(() => Promise.resolve());

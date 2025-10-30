@@ -1,20 +1,17 @@
+const autoBind = require('auto-bind');
 const AddThreadUseCase = require('../../../../Applications/use_case/AddThreadUseCase');
 const AddCommentUseCase = require('../../../../Applications/use_case/AddCommentUseCase');
 const AddReplyUseCase = require('../../../../Applications/use_case/AddReplyUseCase');
 const GetThreadDetailUseCase = require('../../../../Applications/use_case/GetDetailThreadUseCase');
 const DeleteCommentUseCase = require('../../../../Applications/use_case/DeleteCommentUseCase');
 const DeleteReplyUseCase = require('../../../../Applications/use_case/DeleteReplyUseCase');
+const PutCommentLikeUseCase = require('../../../../Applications/use_case/PutCommentLikeUseCase');
 
 class ThreadHandler {
   constructor(container) {
     this._container = container;
 
-    this.postThreadHandler = this.postThreadHandler.bind(this);
-    this.postCommentHandler = this.postCommentHandler.bind(this);
-    this.postReplyHandler = this.postReplyHandler.bind(this);
-    this.getThreadHandler = this.getThreadHandler.bind(this);
-    this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
-    this.deleteReplyHandler = this.deleteReplyHandler.bind(this);
+    autoBind(this);
   }
 
   async postThreadHandler(request, h) {
@@ -117,6 +114,18 @@ class ThreadHandler {
       replyId,
       credentialId,
     );
+
+    return { status: 'success' };
+  }
+
+  async putLikeCommentHandler(request, h) {
+    const { id: credentialId } = request.auth.credentials;
+    const { threadId, commentId } = request.params;
+
+    const putCommentLikeUseCase = await this._container.getInstance(
+      PutCommentLikeUseCase.name,
+    );
+    await putCommentLikeUseCase.execute(credentialId, threadId, commentId);
 
     return { status: 'success' };
   }
