@@ -1,0 +1,29 @@
+name: CD - Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout source
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Railway CLI
+      - name: Setup Railway
+        uses: railwayapp/railway-action@v2
+        with:
+          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
+
+      # 3️⃣ Optional - Tes build Docker (pastikan tidak error)
+      - name: Build Docker image (test only)
+        run: docker build -t forum-app .
+
+      # 4️⃣ Deploy ke Railway (Railway otomatis build dari Dockerfile)
+      - name: Deploy to Railway
+        run: railway up --ci
