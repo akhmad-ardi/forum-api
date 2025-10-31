@@ -19,5 +19,12 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
-# Jalankan Node & tunggu siap sebelum start nginx
-CMD ["sh", "-c", "node src/app.js & while ! nc -z 127.0.0.1 5000; do sleep 1; done; nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "\
+node src/app.js & \
+echo '🚀 Starting Node.js...' && \
+while ! nc -z 127.0.0.1 5000; do \
+  echo '⏳ Waiting Node.js...'; \
+  sleep 1; \
+done; \
+echo '✅ Node.js is ready. Starting NGINX...' && \
+nginx -g 'daemon off;'"]
