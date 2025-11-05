@@ -35,18 +35,18 @@ jobs:
 
               if [ ! -f ".env" ]; then
                 echo "Creating default .env file..."
-                cat > .env <<-'EOF'
-                HOST=0.0.0.0
-                PORT=5000
-                PGHOST=${{ secrets.PGHOST }}
-                PGUSER=${{ secrets.PGUSER }}
-                PGDATABASE=${{ secrets.PGDATABASE }}
-                PGPASSWORD=${{ secrets.PGPASSWORD }}
-                PGPORT=${{ secrets.PGPORT }}
-                ACCESS_TOKEN_KEY=${{ secrets.ACCESS_TOKEN_KEY }}
-                REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }}
-                ACCESS_TOKEN_AGE=${{ secrets.ACCESS_TOKEN_AGE }}
-                EOF
+                printf "%s\n" \
+                  "HOST=0.0.0.0" \
+                  "PORT=5000" \
+                  "PGHOST=${{ secrets.PGHOST }}" \
+                  "PGUSER=${{ secrets.PGUSER }}" \
+                  "PGDATABASE=${{ secrets.PGDATABASE }}" \
+                  "PGPASSWORD=${{ secrets.PGPASSWORD }}" \
+                  "PGPORT=${{ secrets.PGPORT }}" \
+                  "ACCESS_TOKEN_KEY=${{ secrets.ACCESS_TOKEN_KEY }}" \
+                  "REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }}" \
+                  "ACCESS_TOKEN_AGE=${{ secrets.ACCESS_TOKEN_AGE }}" \
+                > .env
               fi
             else
               echo "Project exists, pulling latest changes..."
