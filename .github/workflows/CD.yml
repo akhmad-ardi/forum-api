@@ -34,7 +34,8 @@ jobs:
               cd $PROJECT_DIR
 
               if [ ! -f ".env" ]; then
-                cat <<EOF > .env
+                echo "Creating default .env file..."
+                cat > .env <<-'EOF'
                 HOST=0.0.0.0
                 PORT=5000
                 PGHOST=${{ secrets.PGHOST }}
@@ -45,6 +46,7 @@ jobs:
                 ACCESS_TOKEN_KEY=${{ secrets.ACCESS_TOKEN_KEY }}
                 REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }}
                 ACCESS_TOKEN_AGE=${{ secrets.ACCESS_TOKEN_AGE }}
+                EOF
               fi
             else
               echo "Project exists, pulling latest changes..."
