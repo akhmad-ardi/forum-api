@@ -1,4 +1,4 @@
-name: CD - Deploy to Railway
+name: Deploy via Ngrok SSH
 
 on:
   push:
@@ -8,15 +8,45 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    container: ghcr.io/railwayapp/cli:latest
-
-    env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy to Railway
-        run: railway up --service=${{ env.RAILWAY_SERVICE_ID }} --ci
+      - name: SSH and deploy app
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            PROJECT_DIR=~/forum-api
+
+            echo "Starting deployment on $(hostname)..."
+
+            if [ ! -d "$PROJECT_DIR/.git" ]; then
+              echo "Project not found, cloning for the first time..."
+              git clone https://github.com/<username>/<repo-name>.git $PROJECT_DIR
+              cd $PROJECT_DIR
+            else
+              echo "Project exists, pulling latest changes..."
+              cd $PROJECT_DIR
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+
+            echo "Installing dependencies..."
+            npm ci --production
+
+            echo "Running migrations..."
+            npm run migrate up || echo "No migration step found"
+
+            echo "Restarting PM2 process..."
+            pm2 restart forum-api || pm2 start src/app.js --name forum-api
+
+            # reload nginx jika konfigurasi berubah
+            echo "Reloading nginx..."
+            sudo nginx -t && sudo systemctl reload nginx
+
+            echo "Deployment complete!"
