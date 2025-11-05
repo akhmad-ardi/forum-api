@@ -21,13 +21,15 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            export PATH=$PATH:/home/ardi/.nvm/versions/node/v22.15.0/bin:/usr/local/bin:/usr/bin:/bin
+            
             PROJECT_DIR=~/forum-api
 
             echo "Starting deployment on $(hostname)..."
 
             if [ ! -d "$PROJECT_DIR/.git" ]; then
               echo "Project not found, cloning for the first time..."
-              git clone https://github.com/<username>/<repo-name>.git $PROJECT_DIR
+              git clone https://github.com/akhmad-ardi/forum-api.git $PROJECT_DIR
               cd $PROJECT_DIR
             else
               echo "Project exists, pulling latest changes..."
