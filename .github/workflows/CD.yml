@@ -21,8 +21,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            export PATH=$PATH:/home/ardi/.nvm/versions/node/v22.15.0/bin:/usr/local/bin:/usr/bin:/bin
-
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            export PATH="$NVM_DIR/versions/node/v22.21.1/bin:$PATH"
+            
             PROJECT_DIR=~/forum-api
             NGINX_CONF=$PROJECT_DIR/nginx.conf
 
