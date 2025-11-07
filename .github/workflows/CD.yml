@@ -65,16 +65,16 @@ jobs:
             pm2 restart forum-api || pm2 start src/app.js --name forum-api
 
             echo "Testing Nginx configuration..."
-            echo ${{ secrets.SUDO_PASSWORD }} | sudo -S nginx -t -c $NGINX_CONF || exit 1
+            sudo nginx -t -c $NGINX_CONF || exit 1
 
             echo "Stopping Nginx if running..."
             if pgrep nginx > /dev/null; then
-              echo ${{ secrets.SUDO_PASSWORD }} | sudo -S nginx -s stop
+              sudo nginx -s stop
             else
               echo "Nginx is not running, skipping stop."
             fi
 
             echo "Starting Nginx with project config..."
-            echo ${{ secrets.SUDO_PASSWORD }} | sudo -S nginx -c $NGINX_CONF
+            sudo nginx -c $NGINX_CONF
 
             echo "Deployment complete!"
