@@ -27,7 +27,6 @@ jobs:
             export PATH="$NVM_DIR/versions/node/v22.21.1/bin:$PATH"
             
             PROJECT_DIR=~/forum-api
-            NGINX_CONF=$PROJECT_DIR/nginx.conf
 
             echo "Starting deployment on $(hostname)..."
 
@@ -66,18 +65,5 @@ jobs:
 
             echo "Restarting PM2 process..."
             pm2 restart forum-api || pm2 start src/app.js --name forum-api
-
-            echo "Testing Nginx configuration..."
-            sudo nginx -t -c $NGINX_CONF || exit 1
-
-            echo "Stopping Nginx if running..."
-            if pgrep nginx > /dev/null; then
-              sudo nginx -s stop
-            else
-              echo "Nginx is not running, skipping stop."
-            fi
-
-            echo "Starting Nginx with project config..."
-            sudo nginx -c $NGINX_CONF
 
             echo "Deployment complete!"
