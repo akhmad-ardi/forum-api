@@ -1,4 +1,4 @@
-name: Deploy via Ngrok SSH
+name: CD - Deploy to UpCloud
 
 on:
   push:
